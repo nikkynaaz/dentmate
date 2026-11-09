@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="DentMate: an AI patient navigation assistant built by Nikky Shaik for a Master of Artificial Intelligence capstone.">
+<title>DentMate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: a single reading column that tells the story in order — problem, answer, build — with the chat and visit card as the visual proof */
+:root{
+  --bg:#f3f8f7; --surface:#ffffff; --ink:#12302d; --muted:#4f6b67; --line:#d3e3e0;
+  --teal:#0f7f74; --teal-soft:#d9efec; --coral:#d9624a; --coral-soft:#fbe6e0;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0c1b19; --surface:#132826; --ink:#e3f1ee; --muted:#9db8b3; --line:#24403c;
+  --teal:#4cc3b4; --teal-soft:#173a36; --coral:#f08a72; --coral-soft:#3a221c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1b19; --surface:#132826; --ink:#e3f1ee; --muted:#9db8b3; --line:#24403c;
+  --teal:#4cc3b4; --teal-soft:#173a36; --coral:#f08a72; --coral-soft:#3a221c; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:980px;margin:0 auto;padding-block:40px 64px;display:flex;flex-direction:column;gap:72px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:clamp(44px,8vw,76px);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(28px,4.4vw,40px);font-weight:700;letter-spacing:-.01em}
+h3{font-size:20px;font-weight:700}
+p{margin:0}
+.label{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+.lede{font-size:clamp(18px,2.3vw,21px);color:var(--muted);max-width:60ch}
+.section{display:flex;flex-direction:column;gap:22px}
+.section > p{max-width:65ch}
+a{color:var(--teal)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--coral);outline-offset:3px;border-radius:6px}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.hero > *{min-width:0}
+.brand{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.brand svg{width:56px;height:56px;flex:none}
+.byline{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:22px;font-size:15px;color:var(--muted)}
+.byline b{color:var(--ink)}
+.h1-accent{color:var(--teal)}
+
+/* Chat */
+.chat{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 18px 40px -24px rgba(15,60,55,.35)}
+.chat-top{display:flex;align-items:center;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--line);font-family:var(--display);font-weight:700}
+.chat-top svg{width:28px;height:28px}
+.chat-top span{font-family:var(--mono);font-weight:500;font-size:11px;color:var(--muted);margin-left:auto;letter-spacing:.06em;text-transform:uppercase}
+.msg{max-width:86%;padding:10px 14px;border-radius:16px;font-size:15px;line-height:1.45}
+.bot{background:var(--teal-soft);border-bottom-left-radius:4px}
+.me{background:var(--ink);color:var(--bg);align-self:flex-end;border-bottom-right-radius:4px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:13px;border:1px solid var(--teal);color:var(--teal);border-radius:999px;padding:3px 10px}
+
+/* Problem */
+.scatter{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.page{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 14px 18px;font-size:14px;color:var(--muted);position:relative}
+.page b{display:block;font-family:var(--display);color:var(--ink);font-size:16px;margin-bottom:8px}
+.page i{display:block;height:6px;border-radius:3px;background:var(--line);margin-top:6px}
+.page i:nth-child(3){width:80%}.page i:nth-child(4){width:60%}
+.page:nth-child(1){transform:rotate(-1.5deg)}.page:nth-child(2){transform:translateY(10px) rotate(1deg)}
+.page:nth-child(3){transform:rotate(-.6deg)}.page:nth-child(4){transform:translateY(-4px) rotate(1.4deg)}
+.page:nth-child(5){transform:translateY(6px) rotate(-1deg)}.page:nth-child(6){transform:rotate(.8deg)}
+.outcome{display:flex;gap:14px;align-items:flex-start;background:var(--coral-soft);border-radius:14px;padding:18px 20px}
+.outcome svg{flex:none;width:28px;height:28px;color:var(--coral)}
+.outcome p{max-width:62ch}
+
+/* Flow */
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;counter-reset:q}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.step .label{color:var(--muted)}
+.step.result{background:var(--teal);border-color:var(--teal);color:#fff}
+.step.result .label{color:rgba(255,255,255,.8)}
+.flow-note{font-size:15px;color:var(--muted)}
+
+/* Visit card */
+.answer{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center}
+.answer > *{min-width:0}
+.vcard{background:var(--surface);border-radius:18px;border:1px solid var(--line);overflow:hidden;box-shadow:0 18px 40px -26px rgba(15,60,55,.4)}
+.vcard header{background:var(--teal);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;font-family:var(--display);font-weight:700}
+.vcard header span{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.08em;opacity:.85}
+.vcard dl{margin:0;padding:6px 18px 16px;display:grid;grid-template-columns:auto 1fr;gap:10px 16px;font-size:15px}
+.vcard dt{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);padding-top:3px}
+.vcard dd{margin:0}
+.vcard .ex{font-size:12.5px;color:var(--muted);padding:0 18px 14px;font-style:italic}
+.ticks{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.ticks li{display:flex;gap:10px}
+.ticks li::before{content:"";flex:none;width:18px;height:18px;margin-top:4px;border-radius:50%;background:var(--teal-soft);border:5px solid var(--teal)}
+
+/* Build */
+.build{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.build li{display:grid;grid-template-columns:56px 1fr;gap:18px;padding:20px 0;border-top:1px solid var(--line)}
+.build li > div{min-width:0;display:flex;flex-direction:column;gap:4px}
+.num{font-family:var(--display);font-weight:800;font-size:34px;color:var(--teal);line-height:1}
+.build p{color:var(--muted);max-width:62ch}
+
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.stat{border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--surface)}
+.stat strong{display:block;font-family:var(--display);font-size:40px;font-weight:800;color:var(--teal);line-height:1;font-variant-numeric:tabular-nums}
+.stat span{font-size:14.5px;color:var(--muted)}
+
+.privacy{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.privacy div{display:flex;flex-direction:column;gap:6px}
+.privacy p{color:var(--muted);font-size:15.5px}
+
+footer{border-top:1px solid var(--line);padding-top:24px;display:flex;flex-direction:column;gap:10px;font-size:14px;color:var(--muted)}
+footer .who{font-size:16px;color:var(--ink)}
+
+@media (max-width:760px){
+  .hero,.answer{grid-template-columns:1fr}
+  .flow{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .scatter{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats,.privacy{grid-template-columns:1fr}
+  .wrap{gap:56px;padding-block:28px 48px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .msg{animation:rise .5s ease both}
+  .msg:nth-of-type(2){animation-delay:.15s}.msg:nth-of-type(3){animation-delay:.3s}
+  .msg:nth-of-type(4){animation-delay:.45s}.msg:nth-of-type(5){animation-delay:.6s}
+  @keyframes rise{from{transform:translateY(6px)}to{transform:none}}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 64 64">
+    <path d="M10 8h44a8 8 0 0 1 8 8v26a8 8 0 0 1-8 8H28l-12 10v-10h-6a8 8 0 0 1-8-8V16a8 8 0 0 1 8-8z" fill="var(--teal)"/>
+    <path d="M24 17c-5 0-8 4-8 9 0 6 3 9 4 15 .5 3 1.5 5 3 5 2.5 0 2.5-8 5-8h8c2.5 0 2.5 8 5 8 1.5 0 2.5-2 3-5 1-6 4-9 4-15 0-5-3-9-8-9-3 0-4.5 1.5-8 1.5S27 17 24 17z" fill="#fff"/>
+  </symbol>
+</svg>
+
+<main class="wrap">
+
+  <header class="hero">
+    <div>
+      <div class="brand">
+        <svg aria-hidden="true"><use href="#logo"/></svg>
+        <span class="label">Patient navigation assistant</span>
+      </div>
+      <h1>Know before you <span class="h1-accent">call.</span></h1>
+      <p class="lede" style="margin-top:18px">DentMate helps people find out if they can use a public dental service, what to bring, and what to expect, before they pick up the phone.</p>
+      <div class="byline">
+        <span>Built by <b>Nikky Shaik</b></span>
+        <span>Master of Artificial Intelligence capstone</span>
+        <span>La Trobe University</span>
+      </div>
+    </div>
+
+    <div class="chat" role="img" aria-label="Example DentMate conversation">
+      <div class="chat-top"><svg aria-hidden="true"><use href="#logo"/></svg>DentMate<span>Example</span></div>
+      <div class="msg bot">Hi, I can help you get ready for a dental visit. How old is the person who needs care?</div>
+      <div class="msg me">I'm 34</div>
+      <div class="msg bot">Do you hold a current concession card?</div>
+      <div class="chips"><span class="chip">Yes</span><span class="chip">No</span><span class="chip">Not sure</span></div>
+      <div class="msg me">Yes, a Health Care Card</div>
+      <div class="msg bot">You're likely eligible. Here's your visit card with what to bring and who to call.</div>
+    </div>
+  </header>
+
+  <section class="section" aria-labelledby="problem">
+    <span class="label">The problem</span>
+    <h2 id="problem">The answers exist. They're just spread across too many pages.</h2>
+    <p>Working on the front line of a public dental service, I saw the same pattern every day. People had to piece together eligibility, costs, referrals and what to bring from separate web pages written in service language. Many gave up and called, often without the card or document they needed.</p>
+    <div class="scatter" aria-hidden="true">
+      <div class="page"><b>Who is eligible</b><i></i><i></i><i></i></div>
+      <div class="page"><b>Concession cards</b><i></i><i></i><i></i></div>
+      <div class="page"><b>Fees and payments</b><i></i><i></i><i></i></div>
+      <div class="page"><b>Referrals</b><i></i><i></i><i></i></div>
+      <div class="page"><b>Emergency care</b><i></i><i></i><i></i></div>
+      <div class="page"><b>Getting there</b><i></i><i></i><i></i></div>
+    </div>
+    <div class="outcome">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+      <p><b>The result:</b> long phone queues filled with questions a short conversation could answer, and staff time spent re-explaining the same rules instead of helping people who need it most.</p>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="solution">
+    <span class="label">What DentMate does</span>
+    <h2 id="solution">A few questions, in the right order.</h2>
+    <p>Instead of asking people to read policy, DentMate asks them about themselves. Each answer narrows the path, the same way an experienced staff member would screen a call.</p>
+    <div class="flow">
+      <div class="step"><span class="label">Question 1</span><h3>Age</h3><p class="flow-note">Children and adults follow different paths.</p></div>
+      <div class="step"><span class="label">Question 2</span><h3>Concession card</h3><p class="flow-note">Which card, and is it current?</p></div>
+      <div class="step"><span class="label">Question 3</span><h3>Priority groups</h3><p class="flow-note">Checked before suggesting a private option.</p></div>
+      <div class="step result"><span class="label">Answer</span><h3>Visit card</h3><p>Eligibility, what to bring, what to expect, who to call.</p></div>
+    </div>
+
+    <div class="answer">
+      <div class="vcard">
+        <header>Your visit card<span>EXAMPLE</span></header>
+        <dl>
+          <dt>Status</dt><dd>Likely eligible for public dental care</dd>
+          <dt>Bring</dt><dd>Concession card, Medicare card, referral letter if you have one</dd>
+          <dt>Expect</dt><dd>A short assessment first, then booking for treatment</dd>
+          <dt>Next</dt><dd>Call the service and choose the general care option</dd>
+        </dl>
+        <p class="ex">Illustrative only. Content is generic, not taken from any service's policy.</p>
+      </div>
+      <ul class="ticks">
+        <li><span><b>Plain language.</b> Answers written for patients, not staff.</span></li>
+        <li><span><b>One page, not six.</b> Everything needed for the call, in one place.</span></li>
+        <li><span><b>Take it with you.</b> Visit cards are designed to be saved or texted to yourself.</span></li>
+        <li><span><b>Knows its limits.</b> Points people in pain to urgent care instead of guessing.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="build">
+    <span class="label">How I built it</span>
+    <h2 id="build">From a frontline problem to a tested prototype.</h2>
+    <ol class="build">
+      <li><span class="num">1</span><div><h3>Started from real calls</h3><p>Mapped the questions people actually ask and the order staff answer them in, from nearly four years on the front line.</p></div></li>
+      <li><span class="num">2</span><div><h3>Structured the knowledge</h3><p>Turned scattered information into one structured reference document so the assistant answers from a single source, not from guesswork.</p></div></li>
+      <li><span class="num">3</span><div><h3>Designed the conversation</h3><p>Wrote the system prompt and a step-by-step screening flow, so the assistant asks before it answers.</p></div></li>
+      <li><span class="num">4</span><div><h3>Tested it against itself</h3><p>Compared baseline and grounded versions of Claude, ChatGPT and Gemini on realistic patient scenarios, and logged every factual error.</p></div></li>
+      <li><span class="num">5</span><div><h3>Moving it into code</h3><p>Now building a working prototype in GitHub with AI-assisted development, with privacy designed in from the start.</p></div></li>
+    </ol>
+    <div class="stats">
+      <div class="stat"><strong>5</strong><span>model configurations compared</span></div>
+      <div class="stat"><strong>10</strong><span>realistic patient scenarios</span></div>
+      <div class="stat"><strong>50</strong><span>test conversations reviewed for accuracy</span></div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="trust">
+    <span class="label">Designed for trust</span>
+    <h2 id="trust">Healthcare AI has to be careful by default.</h2>
+    <div class="privacy">
+      <div><h3>Private by design</h3><p>The prototype is being built so search runs locally and nothing a person types is sent to an outside service.</p></div>
+      <div><h3>Grounded, not invented</h3><p>DentMate answers from one checked reference document rather than a model's general knowledge, and testing focused on catching factual errors.</p></div>
+      <div><h3>A guide, not a gatekeeper</h3><p>DentMate prepares people for the call. Staff still make every decision about care.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <p class="who"><b>Nikky Shaik</b> · Master of Artificial Intelligence, La Trobe University · <a href="http://www.linkedin.com/in/nikky-shaik-53b58216a/" target="_blank" rel="noopener">LinkedIn</a></p>
+    <p>DentMate is an independent student project built for a university capstone. It is not an official service of any health organisation, and no patient data was used in building or testing it.</p>
+  </footer>
+</main>
+
+</body>
+</html>
